@@ -2,7 +2,7 @@
 
 .NET Core 3.0 is required to run this code.
 
-To run the example Fasta profiling run:
+To run the example Fasta profiling:
 
 dotnet run -p ./run/run.csproj -c Release
 
