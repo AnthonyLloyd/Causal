@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Ddg.fs" />
+    <Compile Include="Dbg.fs" />
     <Compile Include="ListSlim.fs" />
     <Compile Include="Statistics.fs" />
     <Compile Include="Perf.fs" />
