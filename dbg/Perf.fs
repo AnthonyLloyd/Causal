@@ -4,11 +4,9 @@ open System
 open System.Threading
 open System.Diagnostics
 
-[<Struct>]
-type PerfRegion =
-    PerfRegion of string * int64 * totalDelay: int64 * onSince: int64
-
 module Perf =
+    [<Struct>]
+    type Region = Region of string * int64 * totalDelay: int64 * onSince: int64
     [<Struct>]
     type private PerfRun = Nothing | CollectTimes | Delay
     let mutable private perfRun = Nothing
@@ -21,7 +19,7 @@ module Perf =
     let mutable private totalDelay = 0L
 
     let regionStart (name:string) =
-        if perfRun = Nothing then PerfRegion(null, 0L, 0L, 0L)
+        if perfRun = Nothing then Region(null, 0L, 0L, 0L)
         else
             let now = Stopwatch.GetTimestamp()
             let mutable lockTaken = false
@@ -31,11 +29,11 @@ module Perf =
                     if onSince <> 0L then failwithf "um %i" onSince
                     onSince <- now
                 delayCount <- delayCount + 1
-            let pr = PerfRegion (name, now, totalDelay, onSince)
+            let pr = Region (name, now, totalDelay, onSince)
             if lockTaken then lock.Exit false
             pr
 
-    let regionEnd (PerfRegion (name,start,startTotalDelay,startOnSince)) =
+    let regionEnd (Region (name,start,startTotalDelay,startOnSince)) =
         if perfRun = Nothing then ()
         else
             let now = Stopwatch.GetTimestamp()

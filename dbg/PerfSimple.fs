@@ -4,10 +4,9 @@ open System
 open System.Threading
 open System.Diagnostics
 
-[<Struct>]
-type PerfRegionSimple = PerfRegionSimple of string * int64
-
 module PerfSimple =
+    [<Struct>]
+    type Region = Region of string * int64
     [<Struct>]
     type private PerfRun = Nothing | CollectTimes | Delay
     let mutable private perfRun = Nothing
@@ -17,10 +16,10 @@ module PerfSimple =
     let mutable private times = ListSlim()
 
     let regionStart (name:string) =
-        if perfRun = Nothing then PerfRegionSimple(null, 0L)
-        else PerfRegionSimple (name, Stopwatch.GetTimestamp())
+        if perfRun = Nothing then Region(null, 0L)
+        else Region (name, Stopwatch.GetTimestamp())
 
-    let regionEnd (PerfRegionSimple (name,start)) =
+    let regionEnd (Region (name,start)) =
         if perfRun = Nothing then ()
         else
             let now = Stopwatch.GetTimestamp()
