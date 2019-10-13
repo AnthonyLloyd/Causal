@@ -44,22 +44,36 @@ module PerfSimple =
         let clear() = times <- ListSlim times.Count
         run (CollectTimes,null,0) |> ignore
         clear()
-        let summary =
+
+        let times() =
             let totalTimePct =
                 float(run (CollectTimes,null,0) * Environment.ProcessorCount)
                 * 0.01
-            times.ToSeq()
-            |> Seq.groupBy (fun struct (n,_) -> n)
-            |> Seq.map (fun (r,s) ->
-                r,  {|
+            let summaries =
+                times.ToSeq()
+                |> Seq.groupBy (fun struct (n,_) -> n)
+                |> Seq.map (fun (r,s) ->
+                    {|
                         Region = r
                         Count = Seq.length s
                         Time = float(Seq.sumBy (fun struct (_,t) -> t) s)
-                               / totalTimePct
+                                / totalTimePct
                     |} )
-            |> dict
+                |> Seq.toList
+            clear()
+            summaries
 
-        clear()
+        let summary =
+            Seq.init 6 (ignore >> times)
+            |> Seq.concat
+            |> Seq.groupBy (fun i -> i.Region)
+            |> Seq.map (fun (r,s) ->
+              r,{|
+                  Region = r
+                  Count = (s |> Seq.sumBy (fun i -> i.Count)) / Seq.length s
+                  Time = s |> Seq.map (fun i -> i.Time) |> Seq.medianNoOutliers
+                |} )
+            |> dict
 
         let delays = [|
             Delay,null,0

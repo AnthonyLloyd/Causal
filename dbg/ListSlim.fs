@@ -49,3 +49,6 @@ type internal ListSlim<'k> =
         Array.Copy(m.entries, j, m.entries, j+1, i-j)
         m.entries.[j] <- key
         m.count <- i+1
+
+    member m.SortInPlace() =
+        Array.Sort(m.entries, 0, m.count)
